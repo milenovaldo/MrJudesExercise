@@ -4,38 +4,58 @@ import numpy as np
 import datetime as dt
 import matplotlib.pyplot as plt
 import pygal as pg
+import statistics as st
 
 class DataVis():
 
     def __init__(self, fileName):
         self.fileName = fileName
 
-    def meanTotalSteps(self, optionalFileName = "csv/activity.csv"):
-        retDict = {}
-        with open(optionalFileName, "r") as f:
+    def meanTotalSteps(self, optionalFileName = "C:/Exercises/MrJude/csv/activity.csv"):
+        filename = "C:/Exercises/MrJude/csv/activity.csv"
+
+        dictionary = {}
+        dictionaryInterval = {}
+        dictionaryIntervalWeekdays = {}
+        dictionaryIntervalWeekends = {}
+
+        with open(optionalFileName) as f:
             reader = csv.reader(f)
-            next(reader)
-            dateList = []
-            stepsList = []
+            headerRow = next(reader)
             for row in reader:
-                if row[1] not in dateList:
-                    dateList.append(row[1])
-                else:
-                    continue
-            f.seek(0)
-            next(reader)
-            for date in dateList:
-                f.seek(0)
-                next(reader)
-                for row in reader:
-                    if row[1] == date:
-                        stepsList.append(int(row[0]))
+                steps = row[0]
+                if row[0] != 'NA':
+                    date = row[1]
+                    date2 = int(dt.datetime.strptime(date, "%Y-%m-%d").day)
+                    interval = int(row[2])
+                    dictionary.setdefault(str(date), [])
+                    dictionary[str(date)].append(int(steps))
+                    dictionaryInterval.setdefault(interval, [])
+                    dictionaryInterval[interval].append(int(steps))
+
+                    if date2 % 7 == 0:
+                        dictionaryIntervalWeekends.setdefault(interval, [])
+                        dictionaryIntervalWeekends[interval].append(int(steps))
                     else:
-                        continue
-                retDict[date] = sum(stepsList)
-                sMean = np.mean(stepsList)
-                sMedian = np.median(stepsList)
-                print(f'Date: {date} Mean: {sMean} Median: {sMedian}')
+                        dictionaryIntervalWeekdays.setdefault(interval, [])
+                        dictionaryIntervalWeekdays[interval].append(int(steps))
+
+        listDate = []
+        listTotal = []
+        listAv = []
+
+        for i in dictionary.keys():
+            listDate.append(i)
+            listTotal.append(sum(dictionary.get(i)))
+            listAv.append(st.mean(dictionary.get(i)))
+
+        plt.hist(listTotal)
+        plt.title('Total steps per day')
+        plt.xlabel('Steps per day')
+        plt.ylabel('Frequency')
+        plt.xticks(range(0,25,5))
+        plt.show()
+        return listAv
 
     def dailyActivityPattern(self):
         with open(self.fileName, 'r') as fp:
@@ -57,7 +77,7 @@ class DataVis():
                 else:
                     continue
             return maxIntervals
-
+  
     def inputMissingValues(self, newFileName):
         with open(self.fileName, 'r') as fp:
             reader = csv.reader(fp)
@@ -90,7 +110,7 @@ class DataVis():
 
 dv = DataVis("C:/Exercises/MrJude/csv/activity.csv")
 
-dv.meanTotalSteps() #Accepts absolute path of the csv as an optional parameter
-dv.dailyActivityPattern()
-dv.inputMissingValues('csv/newActivity.csv') #Requires the path to the new csv containing the new values
+print(dv.meanTotalSteps()) #Accepts absolute path of the csv as an optional parameter
+#print(dv.dailyActivityPattern())
+dv.inputMissingValues("C:/Exercises/MrJude/csv/newActivity.csv") #Requires the path to the new csv containing the new values
 #%%
