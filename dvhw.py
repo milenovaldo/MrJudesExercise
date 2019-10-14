@@ -12,8 +12,6 @@ class DataVis():
         self.fileName = fileName
 
     def meanTotalSteps(self, optionalFileName = "C:/Exercises/MrJude/csv/activity.csv"):
-        filename = "C:/Exercises/MrJude/csv/activity.csv"
-
         dictionary = {}
         dictionaryInterval = {}
         dictionaryIntervalWeekdays = {}
