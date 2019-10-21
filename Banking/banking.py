@@ -51,7 +51,6 @@ class Bank():
 
 
     def addCustomer(self, fName, lName):
-        self.__customer.append(f"{Customer('Luck', 'Man').getFirstName()} {Customer('Luck', 'Man').getLastName()}")
         self.__customer.append(f'{fName.title()} {lName.title()}')
         with open(self.__filePath, 'w') as wfp:
             for element in self.__customer:
